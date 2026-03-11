@@ -9,7 +9,7 @@
             <field name="subject">Your Commission Report — {{ ctx.get('commission_data', {}).get('month_label', '') }}</field>
             <field name="email_to">{{ ctx.get('commission_data', {}).get('email', object.user_id.email or '') }}</field>
             <field name="email_from">{{ (user.email_formatted or user.company_id.email) }}</field>
-            <field name="body_html" type="qweb">
+            <field name="body_html" type="html">
                 <t t-set="data" t-value="ctx.get('commission_data', {})"/>
                 <t t-set="user_name" t-value="data.get('user_name', '')"/>
                 <t t-set="month_label" t-value="data.get('month_label', '')"/>

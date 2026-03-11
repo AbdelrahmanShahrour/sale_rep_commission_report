@@ -68,7 +68,7 @@
                 <field name="user_id"/>
                 <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Company" name="group_company"
                             context="{'group_by': 'company_id'}"/>
                 </group>

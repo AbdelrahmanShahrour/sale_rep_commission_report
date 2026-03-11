@@ -15,6 +15,7 @@ class SaleCommissionConfig(models.Model):
     """Commission rate configuration per sales representative."""
 
     _name = 'sale.commission.config'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Sales Representative Commission Configuration'
     _rec_name = 'user_id'
     _order = 'user_id asc'

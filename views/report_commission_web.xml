@@ -81,8 +81,8 @@
     <!-- ═══════════════════════════════════════════════════════════════════
          INDEX PAGE — all reps dashboard
     ═══════════════════════════════════════════════════════════════════ -->
-    <template id="report_commission_index" name="Commission Report — All Reps"
-              t-call="sale_rep_commission_report.commission_layout">
+    <template id="report_commission_index" name="Commission Report — All Reps">
+        <t t-call="sale_rep_commission_report.commission_layout">
 
         <!-- Page header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -227,13 +227,14 @@
                 finally { btn.disabled = false; btn.textContent = '✉️ Send All Emails'; }
             }
         </script>
+        </t>
     </template>
 
     <!-- ═══════════════════════════════════════════════════════════════════
          DETAIL PAGE — single rep report
     ═══════════════════════════════════════════════════════════════════ -->
-    <template id="report_commission_detail" name="Commission Report — Detail"
-              t-call="sale_rep_commission_report.commission_layout">
+    <template id="report_commission_detail" name="Commission Report — Detail">
+        <t t-call="sale_rep_commission_report.commission_layout">
 
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -374,17 +375,19 @@
                 finally { btn.disabled = false; btn.textContent = '✉️ Send Email to Rep'; }
             }
         </script>
+        </t>
     </template>
 
     <!-- ═══════════════════════════════════════════════════════════════════
          NO CONFIG PAGE
     ═══════════════════════════════════════════════════════════════════ -->
-    <template id="report_commission_no_config" name="Commission — No Config"
-              t-call="sale_rep_commission_report.commission_layout">
-        <div class="commission-card text-center py-5">
-            <h3>📭 No Commission Profile</h3>
-            <p class="text-muted mt-2" t-out="message"/>
-        </div>
+    <template id="report_commission_no_config" name="Commission — No Config">
+        <t t-call="sale_rep_commission_report.commission_layout">
+            <div class="commission-card text-center py-5">
+                <h3>📭 No Commission Profile</h3>
+                <p class="text-muted mt-2" t-out="message"/>
+            </div>
+        </t>
     </template>
 
     <!-- ═══════════════════════════════════════════════════════════════════
