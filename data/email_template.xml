@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ─── Commission Report Email Template ──────────────────────── -->
+        <record id="email_template_commission_report" model="mail.template">
+            <field name="name">Sales Commission Report</field>
+            <field name="model_id" ref="model_sale_commission_config"/>
+            <field name="subject">Your Commission Report — {{ ctx.get('commission_data', {}).get('month_label', '') }}</field>
+            <field name="email_to">{{ ctx.get('commission_data', {}).get('email', object.user_id.email or '') }}</field>
+            <field name="email_from">{{ (user.email_formatted or user.company_id.email) }}</field>
+            <field name="body_html" type="qweb">
+                <t t-set="data" t-value="ctx.get('commission_data', {})"/>
+                <t t-set="user_name" t-value="data.get('user_name', '')"/>
+                <t t-set="month_label" t-value="data.get('month_label', '')"/>
+                <t t-set="order_count" t-value="data.get('order_count', 0)"/>
+                <t t-set="total_sales" t-value="data.get('total_sales', 0)"/>
+                <t t-set="commission_rate" t-value="data.get('commission_rate', 0)"/>
+                <t t-set="commission_amount" t-value="data.get('commission_amount', 0)"/>
+                <t t-set="currency_symbol" t-value="data.get('currency_symbol', '$')"/>
+                <t t-set="orders" t-value="data.get('orders', [])"/>
+                <t t-set="ai_insights" t-value="data.get('ai_insights', '')"/>
+                <t t-set="company_name" t-value="data.get('company_name', '')"/>
+                <t t-call="sale_rep_commission_report.commission_email_body"/>
+            </field>
+            <field name="lang">{{ object.user_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

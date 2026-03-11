@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LAYOUT BASE — shared header/footer wrapper
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="commission_layout" name="Commission Report Layout">
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title t-out="page_title or 'Commission Report'"/>
+                <link rel="stylesheet"
+                      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+                <style>
+                    body { background: #f4f6fb; font-family: 'Segoe UI', system-ui, sans-serif; }
+                    .navbar-brand { font-weight: 700; letter-spacing: 0.5px; }
+                    .commission-card {
+                        background: #fff;
+                        border-radius: 14px;
+                        box-shadow: 0 2px 16px rgba(0,0,0,.08);
+                        padding: 2rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    .stat-box {
+                        background: linear-gradient(135deg, #6c63ff 0%, #48c6ef 100%);
+                        color: #fff;
+                        border-radius: 12px;
+                        padding: 1.25rem 1.5rem;
+                        text-align: center;
+                    }
+                    .stat-box.green { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #1a4d3a; }
+                    .stat-box.orange { background: linear-gradient(135deg, #f7971e, #ffd200); color: #5a3a00; }
+                    .stat-number { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
+                    .stat-label { font-size: 0.8rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; }
+                    .ai-insights-box {
+                        background: linear-gradient(135deg, #e0eafc, #cfdef3);
+                        border-left: 4px solid #6c63ff;
+                        border-radius: 0 10px 10px 0;
+                        padding: 1.2rem 1.5rem;
+                        margin-top: 1.5rem;
+                    }
+                    .ai-badge { background: #6c63ff; color: #fff; font-size: 0.7rem;
+                                border-radius: 20px; padding: 2px 10px; vertical-align: middle; }
+                    .rep-row:hover { background: #f0f2ff; transition: background 0.2s; }
+                    .table th { background: #6c63ff; color: #fff; font-weight: 500; }
+                    .progress-bar-commission { background: linear-gradient(90deg, #6c63ff, #48c6ef); }
+                    .btn-send-email { background: #6c63ff; color: #fff; border: none; border-radius: 8px; }
+                    .btn-send-email:hover { background: #574fd4; color: #fff; }
+                    .month-badge { background: #e8e6ff; color: #6c63ff; border-radius: 20px;
+                                   padding: 4px 14px; font-size: 0.85rem; font-weight: 600; }
+                </style>
+            </head>
+            <body>
+                <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-dark"
+                     style="background: linear-gradient(90deg, #6c63ff, #48c6ef);">
+                    <div class="container">
+                        <span class="navbar-brand">
+                            📊 Commission Reports
+                        </span>
+                        <div class="ms-auto d-flex align-items-center gap-3">
+                            <a href="/sales/commission/report/my"
+                               class="btn btn-outline-light btn-sm">My Report</a>
+                            <a href="/web#action=sale.action_orders_with_onboarding"
+                               class="btn btn-outline-light btn-sm">Back to Sales</a>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="container mt-4 mb-5">
+                    <t t-call-assets="sale_rep_commission_report.commission_assets_frontend"
+                       t-css="False" t-js="False"/>
+                    <t t-out="0"/>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         INDEX PAGE — all reps dashboard
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="report_commission_index" name="Commission Report — All Reps"
+              t-call="sale_rep_commission_report.commission_layout">
+
+        <!-- Page header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1 fw-bold">Sales Commission Dashboard</h2>
+                <span class="month-badge" t-out="month_label"/>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-send-email"
+                        onclick="sendAllEmails(this)">
+                    ✉️ Send All Emails
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary stats row -->
+        <div class="row g-3 mb-4" t-if="summaries">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <p class="stat-number" t-out="len(summaries)"/>
+                    <p class="stat-label">Sales Representatives</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box green">
+                    <p class="stat-number"
+                       t-out="'{:,.0f}'.format(sum(s['total_sales'] for s in summaries))"/>
+                    <p class="stat-label">Total Revenue</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box orange">
+                    <p class="stat-number"
+                       t-out="'{:,.0f}'.format(sum(s['commission_amount'] for s in summaries))"/>
+                    <p class="stat-label">Total Commissions</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <p class="stat-number"
+                       t-out="sum(s['order_count'] for s in summaries)"/>
+                    <p class="stat-label">Total Orders</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reps table -->
+        <div class="commission-card">
+            <h5 class="mb-3 fw-semibold">Representatives</h5>
+            <div t-if="not summaries" class="text-muted text-center py-4">
+                No commission configurations found. Go to <strong>Sales › Commission Config</strong>
+                to add representatives.
+            </div>
+            <div class="table-responsive" t-if="summaries">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Representative</th>
+                            <th class="text-end">Orders</th>
+                            <th class="text-end">Total Sales</th>
+                            <th class="text-end">Rate</th>
+                            <th class="text-end">Commission</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="summaries" t-as="s">
+                            <tr class="rep-row">
+                                <td>
+                                    <a t-attf-href="/sales/commission/report/#{s['config_id']}"
+                                       class="fw-semibold text-decoration-none">
+                                        <t t-out="s['user_name']"/>
+                                    </a>
+                                    <br/>
+                                    <small class="text-muted" t-out="s['email']"/>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-secondary" t-out="s['order_count']"/>
+                                </td>
+                                <td class="text-end fw-semibold">
+                                    <t t-out="s['currency_symbol']"/>
+                                    <t t-out="'{:,.2f}'.format(s['total_sales'])"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="s['commission_rate']"/>%
+                                </td>
+                                <td class="text-end fw-bold text-success">
+                                    <t t-out="s['currency_symbol']"/>
+                                    <t t-out="'{:,.2f}'.format(s['commission_amount'])"/>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a t-attf-href="/sales/commission/report/#{s['config_id']}"
+                                           class="btn btn-sm btn-outline-primary">View</a>
+                                        <button class="btn btn-sm btn-send-email"
+                                                t-att-data-config-id="s['config_id']"
+                                                onclick="sendOneEmail(this)">
+                                            Email
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- JS for email actions -->
+        <script>
+            async function sendOneEmail(btn) {
+                const configId = btn.dataset.configId;
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+                try {
+                    const resp = await fetch('/sales/commission/send-email/' + configId, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}}),
+                    });
+                    const data = await resp.json();
+                    const result = data.result;
+                    alert(result.success ? result.message : '❌ ' + result.error);
+                } catch(e) { alert('Request failed: ' + e); }
+                finally { btn.disabled = false; btn.textContent = 'Email'; }
+            }
+
+            async function sendAllEmails(btn) {
+                if (!confirm('Send commission emails to ALL sales representatives?')) return;
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+                try {
+                    const resp = await fetch('/sales/commission/send-all-emails', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}}),
+                    });
+                    const data = await resp.json();
+                    const result = data.result;
+                    alert(result.success ? '✅ ' + result.message : '❌ ' + result.error);
+                } catch(e) { alert('Request failed: ' + e); }
+                finally { btn.disabled = false; btn.textContent = '✉️ Send All Emails'; }
+            }
+        </script>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         DETAIL PAGE — single rep report
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="report_commission_detail" name="Commission Report — Detail"
+              t-call="sale_rep_commission_report.commission_layout">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1 fw-bold" t-out="user_name"/>
+                <span class="month-badge" t-out="month_label"/>
+                <small class="text-muted ms-2" t-out="email"/>
+            </div>
+            <div class="d-flex gap-2">
+                <t t-if="is_manager">
+                    <a href="/sales/commission/report" class="btn btn-outline-secondary btn-sm">
+                        ← All Reps
+                    </a>
+                    <button class="btn btn-send-email"
+                            t-att-data-config-id="config_id"
+                            onclick="sendOneEmail(this)">
+                        ✉️ Send Email to Rep
+                    </button>
+                </t>
+                <button onclick="window.print()" class="btn btn-outline-dark btn-sm">
+                    🖨️ Print
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <p class="stat-number" t-out="order_count"/>
+                    <p class="stat-label">Orders Confirmed</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box green">
+                    <p class="stat-number">
+                        <t t-out="currency_symbol"/>
+                        <t t-out="'{:,.0f}'.format(total_sales)"/>
+                    </p>
+                    <p class="stat-label">Total Sales</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box orange">
+                    <p class="stat-number" t-out="str(commission_rate) + '%'"/>
+                    <p class="stat-label">Commission Rate</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <p class="stat-number">
+                        <t t-out="currency_symbol"/>
+                        <t t-out="'{:,.2f}'.format(commission_amount)"/>
+                    </p>
+                    <p class="stat-label">Commission Earned</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights box -->
+        <div class="commission-card" t-if="ai_insights">
+            <h5 class="fw-semibold mb-3">
+                🤖 AI Performance Insights
+                <span class="ai-badge ms-2">Powered by GPT-4o</span>
+            </h5>
+            <div class="ai-insights-box">
+                <p class="mb-0" style="line-height:1.7;" t-out="ai_insights"/>
+            </div>
+        </div>
+
+        <!-- Orders table -->
+        <div class="commission-card">
+            <h5 class="fw-semibold mb-3">Confirmed Orders — <t t-out="month_label"/></h5>
+            <div t-if="not orders" class="text-muted text-center py-4">
+                No confirmed orders found for this month.
+            </div>
+            <div class="table-responsive" t-if="orders">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="orders" t-as="order">
+                            <tr>
+                                <td class="fw-semibold" t-out="order['name']"/>
+                                <td t-out="order['partner']"/>
+                                <td t-out="order['date']"/>
+                                <td class="text-end">
+                                    <t t-out="currency_symbol"/>
+                                    <t t-out="'{:,.2f}'.format(order['amount'])"/>
+                                </td>
+                                <td class="text-end text-success fw-semibold">
+                                    <t t-out="currency_symbol"/>
+                                    <t t-out="'{:,.2f}'.format(order['amount'] * commission_rate / 100)"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-dark fw-bold">
+                            <td colspan="3">TOTAL</td>
+                            <td class="text-end">
+                                <t t-out="currency_symbol"/>
+                                <t t-out="'{:,.2f}'.format(total_sales)"/>
+                            </td>
+                            <td class="text-end text-warning">
+                                <t t-out="currency_symbol"/>
+                                <t t-out="'{:,.2f}'.format(commission_amount)"/>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- JS for email button on detail page -->
+        <script>
+            async function sendOneEmail(btn) {
+                const configId = btn.dataset.configId;
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+                try {
+                    const resp = await fetch('/sales/commission/send-email/' + configId, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}}),
+                    });
+                    const data = await resp.json();
+                    const result = data.result;
+                    alert(result.success ? '✅ ' + result.message : '❌ ' + result.error);
+                } catch(e) { alert('Request failed: ' + e); }
+                finally { btn.disabled = false; btn.textContent = '✉️ Send Email to Rep'; }
+            }
+        </script>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         NO CONFIG PAGE
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="report_commission_no_config" name="Commission — No Config"
+              t-call="sale_rep_commission_report.commission_layout">
+        <div class="commission-card text-center py-5">
+            <h3>📭 No Commission Profile</h3>
+            <p class="text-muted mt-2" t-out="message"/>
+        </div>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         EMAIL BODY TEMPLATE (rendered for mail sending)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="commission_email_body" name="Commission Email Body">
+        <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);">
+            <!-- Header -->
+            <div style="background:linear-gradient(90deg,#6c63ff,#48c6ef);padding:32px 32px 24px;text-align:center;">
+                <h2 style="color:#fff;margin:0;font-size:22px;">📊 Commission Report</h2>
+                <p style="color:rgba(255,255,255,.85);margin:6px 0 0;font-size:15px;" t-out="month_label"/>
+            </div>
+
+            <!-- Greeting -->
+            <div style="padding:28px 32px 0;">
+                <p style="font-size:16px;color:#333;">
+                    Hi <strong t-out="user_name"/>,
+                </p>
+                <p style="color:#555;line-height:1.6;">
+                    Here is your commission summary for <strong t-out="month_label"/>.
+                    Great work this month — keep it up!
+                </p>
+            </div>
+
+            <!-- Stats -->
+            <div style="display:flex;gap:16px;padding:0 32px 24px;flex-wrap:wrap;">
+                <div style="flex:1;min-width:140px;background:#f4f2ff;border-radius:10px;padding:18px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#6c63ff;" t-out="order_count"/>
+                    <div style="font-size:12px;color:#888;text-transform:uppercase;margin-top:4px;">Orders</div>
+                </div>
+                <div style="flex:1;min-width:140px;background:#eefaf4;border-radius:10px;padding:18px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#2db57a;">
+                        <t t-out="currency_symbol"/><t t-out="'{:,.2f}'.format(total_sales)"/>
+                    </div>
+                    <div style="font-size:12px;color:#888;text-transform:uppercase;margin-top:4px;">Total Sales</div>
+                </div>
+                <div style="flex:1;min-width:140px;background:#fff8e6;border-radius:10px;padding:18px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#e59900;">
+                        <t t-out="currency_symbol"/><t t-out="'{:,.2f}'.format(commission_amount)"/>
+                    </div>
+                    <div style="font-size:12px;color:#888;text-transform:uppercase;margin-top:4px;">Your Commission</div>
+                </div>
+            </div>
+
+            <!-- AI Insights -->
+            <div t-if="ai_insights" style="margin:0 32px 24px;background:#eef2ff;border-left:4px solid #6c63ff;border-radius:0 8px 8px 0;padding:18px 20px;">
+                <p style="font-size:13px;font-weight:700;color:#6c63ff;margin:0 0 8px;">🤖 AI Performance Insight</p>
+                <p style="color:#333;line-height:1.7;margin:0;font-size:14px;" t-out="ai_insights"/>
+            </div>
+
+            <!-- Orders table -->
+            <div t-if="orders" style="padding:0 32px 28px;">
+                <h4 style="font-size:15px;font-weight:600;color:#333;margin-bottom:12px;">Order Breakdown</h4>
+                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                    <thead>
+                        <tr style="background:#6c63ff;color:#fff;">
+                            <th style="padding:10px 12px;text-align:left;">Order</th>
+                            <th style="padding:10px 12px;text-align:left;">Customer</th>
+                            <th style="padding:10px 12px;text-align:right;">Amount</th>
+                            <th style="padding:10px 12px;text-align:right;">Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="orders" t-as="order">
+                            <tr t-att-style="'background:' + ('#f9f9f9' if order_index % 2 == 0 else '#fff')">
+                                <td style="padding:9px 12px;" t-out="order['name']"/>
+                                <td style="padding:9px 12px;" t-out="order['partner']"/>
+                                <td style="padding:9px 12px;text-align:right;">
+                                    <t t-out="currency_symbol"/><t t-out="'{:,.2f}'.format(order['amount'])"/>
+                                </td>
+                                <td style="padding:9px 12px;text-align:right;color:#2db57a;font-weight:600;">
+                                    <t t-out="currency_symbol"/>
+                                    <t t-out="'{:,.2f}'.format(order['amount'] * commission_rate / 100)"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="background:#f4f6fb;padding:20px 32px;text-align:center;font-size:12px;color:#aaa;">
+                <p style="margin:0;">
+                    This report was generated automatically by <strong t-out="company_name"/>.
+                </p>
+                <p style="margin:4px 0 0;">If you have questions, please contact your Sales Manager.</p>
+            </div>
+        </div>
+    </template>
+
+</odoo>

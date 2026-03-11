@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ─── Commission sub-menu under Sales ───────────────────────── -->
+        <menuitem
+            id="menu_sale_commission_root"
+            name="Commission"
+            parent="sale.sale_menu_root"
+            sequence="50"
+            groups="sales_team.group_sale_manager"/>
+
+        <!-- Commission Configuration -->
+        <menuitem
+            id="menu_sale_commission_config"
+            name="Commission Config"
+            parent="menu_sale_commission_root"
+            action="action_sale_commission_config"
+            sequence="10"
+            groups="sales_team.group_sale_manager"/>
+
+        <!-- Web Report -->
+        <menuitem
+            id="menu_commission_web_report"
+            name="Web Report (Dashboard)"
+            parent="menu_sale_commission_root"
+            action="action_commission_web_report"
+            sequence="20"
+            groups="sales_team.group_sale_manager"/>
+
+        <!-- Send Emails Wizard -->
+        <menuitem
+            id="menu_send_commission_emails"
+            name="Send Commission Emails"
+            parent="menu_sale_commission_root"
+            action="action_send_commission_email_wizard"
+            sequence="30"
+            groups="sales_team.group_sale_manager"/>
+    </data>
+</odoo>

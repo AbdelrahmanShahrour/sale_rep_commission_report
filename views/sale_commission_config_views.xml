@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Commission Config — List View ─────────────────────────────── -->
+    <record id="view_sale_commission_config_list" model="ir.ui.view">
+        <field name="name">sale.commission.config.list</field>
+        <field name="model">sale.commission.config</field>
+        <field name="arch" type="xml">
+            <list string="Commission Configurations" decoration-muted="not active">
+                <field name="user_id"/>
+                <field name="commission_rate" string="Rate (%)"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" optional="hide"/>
+                <button name="action_send_commission_email"
+                        string="Send Commission Email"
+                        type="object"
+                        icon="fa-envelope"
+                        title="Send current month commission email to this rep"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ─── Commission Config — Form View ─────────────────────────────── -->
+    <record id="view_sale_commission_config_form" model="ir.ui.view">
+        <field name="name">sale.commission.config.form</field>
+        <field name="model">sale.commission.config</field>
+        <field name="arch" type="xml">
+            <form string="Commission Configuration">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="user_id" placeholder="Select Sales Representative..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Commission Settings">
+                            <field name="commission_rate"
+                                   widget="percentage"
+                                   options="{'type': 'percentage'}"/>
+                            <field name="currency_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Status">
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" placeholder="Optional notes about this commission setup..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Commission Config — Search View ───────────────────────────── -->
+    <record id="view_sale_commission_config_search" model="ir.ui.view">
+        <field name="name">sale.commission.config.search</field>
+        <field name="model">sale.commission.config</field>
+        <field name="arch" type="xml">
+            <search string="Commission Configurations">
+                <field name="user_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Company" name="group_company"
+                            context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Action: Commission Config List ────────────────────────────── -->
+    <record id="action_sale_commission_config" model="ir.actions.act_window">
+        <field name="name">Commission Configuration</field>
+        <field name="res_model">sale.commission.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No commission configurations yet!
+            </p>
+            <p>
+                Add a commission rate for each sales representative to
+                enable automated commission reporting and email notifications.
+            </p>
+        </field>
+    </record>
+
+    <!-- ─── Action: Open Web Report (URL action) ──────────────────────── -->
+    <record id="action_commission_web_report" model="ir.actions.act_url">
+        <field name="name">Commission Web Report</field>
+        <field name="url">/sales/commission/report</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ─── Settings: OpenAI Key ──────────────────────────────────────── -->
+    <record id="view_res_config_settings_commission" model="ir.ui.view">
+        <field name="name">res.config.settings.commission.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.action_general_configuration"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='general_configuration']" position="inside">
+                <h2>Sales Commission Report (AI)</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="openai_api_key" string="OpenAI API Key"/>
+                            <div class="text-muted">
+                                Used to generate AI performance insights per sales rep.
+                                Get your key at
+                                <a href="https://platform.openai.com/api-keys" target="_blank">
+                                    platform.openai.com
+                                </a>
+                            </div>
+                            <div class="mt8">
+                                <field name="openai_api_key" password="True"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="commission_default_rate" string="Default Commission Rate (%)"/>
+                            <div class="text-muted">
+                                Applied when creating new commission configurations.
+                            </div>
+                            <div class="mt8">
+                                <field name="commission_default_rate"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

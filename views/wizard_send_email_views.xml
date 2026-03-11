@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Send Commission Email Wizard — Form ───────────────────────── -->
+    <record id="view_send_commission_email_wizard_form" model="ir.ui.view">
+        <field name="name">send.commission.email.wizard.form</field>
+        <field name="model">send.commission.email.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send Commission Emails">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Send Commission Emails</h1>
+                    </div>
+                    <group>
+                        <group string="Recipients">
+                            <field name="send_to" widget="radio"/>
+                            <field name="config_ids"
+                                   widget="many2many_tags"
+                                   invisible="send_to != 'selected'"/>
+                        </group>
+                        <group string="Report Options">
+                            <field name="target_month"/>
+                            <field name="include_ai_insights"/>
+                        </group>
+                    </group>
+                    <div class="o_field_widget o_field_char mt-3">
+                        <div class="alert alert-info">
+                            <field name="preview_text" readonly="1" nolabel="1"/>
+                        </div>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_send"
+                            string="Send Emails"
+                            type="object"
+                            class="btn-primary"
+                            data-hotkey="s"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Action: Open Wizard ───────────────────────────────────────── -->
+    <record id="action_send_commission_email_wizard" model="ir.actions.act_window">
+        <field name="name">Send Commission Emails</field>
+        <field name="res_model">send.commission.email.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
