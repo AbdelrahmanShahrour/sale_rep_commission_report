@@ -11,7 +11,7 @@ This module provides a complete sales representative commission reporting system
 - **Per-rep commission configuration** with flexible percentage rates
 - **Web-based commission dashboard** accessible via HTTP (no PDF dependency)
 - **Detailed per-rep web report** with order breakdown and totals
-- **AI-powered performance insights** via OpenAI GPT-4o
+- **AI-powered performance insights** via Hugging Face Router API
 - **Automated email notifications** with beautiful HTML reports sent to each sales rep
 - **Wizard-based bulk email sending** from the Odoo backend
 
@@ -22,7 +22,7 @@ This module provides a complete sales representative commission reporting system
 - Commission calculated from confirmed (`sale`, `done`) sale orders per month
 - Real-time web report at `/sales/commission/report`
 - Each rep can view their own report at `/sales/commission/report/my`
-- AI insights generated on demand per rep (calls GPT-4o)
+- AI insights generated on demand per rep (calls Hugging Face)
 - Email template with full order table + AI insights
 - Manager dashboard with summary stats and one-click email sending
 - Multi-company support
@@ -41,11 +41,11 @@ This module provides a complete sales representative commission reporting system
 
 ## Configuration
 
-### 1. Set your OpenAI API Key
+### 1. Set your Hugging Face Token
 
 Go to **Settings → General Settings → Sales Commission Report (AI)**
 
-- Paste your OpenAI API key (get one at https://platform.openai.com/api-keys)
+- Paste your Hugging Face token (get one at https://huggingface.co/settings/tokens)
 - Set your default commission rate
 - Click **Save**
 
@@ -110,10 +110,11 @@ Visit `/sales/commission/report/my` — you'll see your own commission report fo
 | `POST /sales/commission/send-all-emails` | user (manager) | Send all emails (JSON-RPC) |
 
 ### AI Integration
-- Uses OpenAI Chat Completions API (`gpt-4o`)
-- API key stored in `ir.config_parameter` (key: `sale_rep_commission_report.openai_api_key`)
-- Falls back gracefully if key is not configured or API times out
-- Max 300 tokens per insight; temperature 0.7
+- Uses Hugging Face Router chat completions API (`Qwen/Qwen2.5-7B-Instruct` by default)
+- API token stored in `ir.config_parameter` (key: `sale_rep_commission_report.huggingface_api_key`)
+- Model stored in `ir.config_parameter` (key: `sale_rep_commission_report.huggingface_model`)
+- Falls back gracefully if token is not configured, model is loading, or API times out
+- Generation parameters: max_new_tokens=220, temperature=0.7
 
 ### Cron Usage
 Call `sale.commission.config.action_send_all_commissions_cron()` from an `ir.cron` record to automate monthly email dispatch.

@@ -96,7 +96,7 @@
         <field name="target">new</field>
     </record>
 
-    <!-- ─── Settings: OpenAI Key ──────────────────────────────────────── -->
+    <!-- ─── Settings: Hugging Face ────────────────────────────────────── -->
     <record id="view_res_config_settings_commission" model="ir.ui.view">
         <field name="name">res.config.settings.commission.inherit</field>
         <field name="model">res.config.settings</field>
@@ -105,9 +105,13 @@
             <xpath expr="//form" position="inside">
                 <app notApp="1" string="Sales Commission (AI)" name="sale_rep_commission_report">
                     <block title="Sales Commission Report (AI)" name="commission_setting_container">
-                        <setting string="OpenAI API Key"
-                                 help="Used to generate AI performance insights per sales rep. Get your key at platform.openai.com">
-                            <field name="openai_api_key" password="True"/>
+                        <setting string="Hugging Face API Token"
+                                 help="Used to generate AI performance insights per sales rep. Create a token at huggingface.co/settings/tokens">
+                            <field name="huggingface_api_key" password="True"/>
+                        </setting>
+                        <setting string="Hugging Face Model"
+                                 help="Chat model repo ID used by the Router API, for example Qwen/Qwen2.5-7B-Instruct or openai/gpt-oss-20b">
+                            <field name="huggingface_model" placeholder="Qwen/Qwen2.5-7B-Instruct"/>
                         </setting>
                         <setting string="Default Commission Rate (%)"
                                  help="Applied when creating new commission configurations.">

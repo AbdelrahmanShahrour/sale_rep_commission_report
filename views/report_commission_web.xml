@@ -298,7 +298,7 @@
         <div class="commission-card" t-if="ai_insights">
             <h5 class="fw-semibold mb-3">
                 🤖 AI Performance Insights
-                <span class="ai-badge ms-2">Powered by GPT-4o</span>
+                <span class="ai-badge ms-2">Powered by Hugging Face</span>
             </h5>
             <div class="ai-insights-box">
                 <p class="mb-0" style="line-height:1.7;" t-out="ai_insights"/>

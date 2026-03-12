@@ -1,13 +1,19 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    openai_api_key = fields.Char(
-        string='OpenAI API Key',
-        config_parameter='sale_rep_commission_report.openai_api_key',
-        help='API key for OpenAI GPT used to generate commission AI insights.',
+    huggingface_api_key = fields.Char(
+        string='Hugging Face API Token',
+        config_parameter='sale_rep_commission_report.huggingface_api_key',
+        help='API token for Hugging Face Inference API used to generate commission AI insights.',
+    )
+    huggingface_model = fields.Char(
+        string='Hugging Face Model',
+        config_parameter='sale_rep_commission_report.huggingface_model',
+        default='Qwen/Qwen2.5-7B-Instruct',
+        help='Chat model repo ID used by the Hugging Face Router API.',
     )
     commission_default_rate = fields.Float(
         string='Default Commission Rate (%)',

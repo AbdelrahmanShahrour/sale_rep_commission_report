@@ -1,12 +1,12 @@
 {
     'name': 'Sales Rep Commission Report with AI',
     'version': '19.0.1.0.0',
-    'summary': 'Sales rep commission reporting with AI insights and automated email notifications',
+    'summary': 'Sales rep commission reporting with Hugging Face AI insights and automated email notifications',
     'description': """
         This module provides:
         - Monthly commission calculation per sales representative
         - Web-based commission report via HTTP controller
-        - AI-powered performance insights using OpenAI GPT
+        - AI-powered performance insights using Hugging Face
         - Automated email notifications to sales reps with commission details
         - Commission rate configuration per user
     """,
