@@ -254,9 +254,6 @@
                         ✉️ Send Email to Rep
                     </button>
                 </t>
-                <button onclick="window.print()" class="btn btn-outline-dark btn-sm">
-                    🖨️ Print
-                </button>
             </div>
         </div>
 

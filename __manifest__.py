@@ -22,6 +22,7 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         'data/email_template.xml',
+        'data/ir_cron.xml',
         'views/sale_commission_config_views.xml',
         'views/report_commission_web.xml',
         'views/wizard_send_email_views.xml',
