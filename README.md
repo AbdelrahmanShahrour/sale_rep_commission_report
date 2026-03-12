@@ -11,16 +11,16 @@
 ## Screenshots
 
 ### Commission Dashboard — All Reps
-![Commission Dashboard](images/Screenshot%202026-03-12%20at%205.54.29AM.png)
+![Commission Dashboard](images/Screenshot-overview.png)
 
 ### Rep Detail Report
-![Rep Detail Report](images/Screenshot%202026-03-12%20at%205.55.05%20AM.png)
+![Rep Detail Report](images/Screenshot-report.png)
 
 ### Commission Config List (Backend)
 ![Commission Config](images/commission-config.png)
 
 ### Send Commission Emails Wizard
-![Send Emails Wizard](images/Screenshot 2026-03-12 at 6.00.42 AM.png)
+![Send Emails Wizard](images/email.png)
 
 ### Commission Email Preview
 ![Email Preview](images/send%20commission%20email%20to%20the%20sales%20rep.png)
