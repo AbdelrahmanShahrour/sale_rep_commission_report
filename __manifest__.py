@@ -11,7 +11,7 @@
         - Commission rate configuration per user
     """,
     'author': 'Abdalrahman Shahrour',
-    'website': 'https://github.com/abdalrahmanshahrour',
+    'website': 'https://github.com/AbdelrahmanShahrour',
     'category': 'Sales/Sales',
     'depends': [
         'sale',

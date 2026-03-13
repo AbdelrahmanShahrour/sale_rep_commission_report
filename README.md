@@ -303,4 +303,4 @@ Wizard for the bulk-send dialog. Supports sending to all active configs or a sel
 ## Author
 
 **Abdalrahman Shahrour** — Odoo Developer & Consultant
-[github.com/abdalrahmanshahrour](https://github.com/abdalrahmanshahrour)
+[github.com/AbdelrahmanShahrour](https://github.com/AbdelrahmanShahrour)
